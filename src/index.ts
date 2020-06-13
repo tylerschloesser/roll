@@ -163,6 +163,7 @@ document.addEventListener('touchstart', (e) => {
 })
 
 document.addEventListener('touchmove', (e) => {
+  e.preventDefault()
   if (state.gesture2) {
     const touch = e.targetTouches.item(0)
     const { clientX, clientY } = touch
@@ -173,10 +174,7 @@ document.addEventListener('touchmove', (e) => {
         b: vec2,
       }
     })
-    return
-  }
-
-  if (state.gesture1) {
+  } else if (state.gesture1) {
     const touch = e.targetTouches.item(0)
     const { clientX, clientY } = touch
     const vec2: Vec2 = { x: clientX, y: clientY }
