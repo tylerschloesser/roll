@@ -9,6 +9,7 @@ interface Circle {
   p: Vec2
   r: number
   v: Vec2
+  a: Vec2
 }
 
 interface Vec2 {
@@ -35,16 +36,23 @@ let state: State = {
     },
     r: 50,
     v: { x: 0, y: 0 },
+    a: { x: 0, y: 0 },
   }
 }
 
 function physics(dt: number): void {
 
   const { c } = state
+  const v1 = c.v
   const p1 = c.p
   const p2 = {
-    x: p1.x + c.v.x,
-    y: p1.y + c.v.y,
+    x: p1.x + v1.x,
+    y: p1.y + v1.y,
+  }
+
+  const v2 = {
+    x: v1.x + c.a.x,
+    y: v1.y + c.a.y,
   }
 
   state = {
@@ -52,6 +60,7 @@ function physics(dt: number): void {
     c: {
       ...state.c,
       p: p2,
+      v: v2,
     }
   }
 
@@ -146,6 +155,7 @@ document.addEventListener('touchend', (e) => {
         c: {
           ...state.c,
           v: { x: 1, y: 1 },
+          a: { x: -.01, y: -.01 },
         }
       }
     }, 500)
