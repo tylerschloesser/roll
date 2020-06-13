@@ -33,9 +33,16 @@ function draw(): void {
 draw()
 
 document.addEventListener('touchstart', (e) => {
-  state = {
-    ...state,
-    touch: true,
+  const touch = e.targetTouches.item(0)
+
+  const { clientX, clientY } = touch
+  const dist = Math.sqrt(Math.pow(clientX - cx, 2) + Math.pow(clientY - cy, 2))
+
+  if (dist < cr * 1.5) {
+    state = {
+      ...state,
+      touch: true,
+    }
   }
 })
 
