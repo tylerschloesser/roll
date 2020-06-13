@@ -12,6 +12,7 @@ import {
   multiply,
   magnitude,
   normalize,
+  zero,
 } from './lib'
 
 const canvas = document.querySelector<HTMLCanvasElement>('canvas')
@@ -33,6 +34,21 @@ let state: State = {
   }
 }
 
+function equal(a: any, b: any) {
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
+function updateState(update: Partial<State>): void {
+  const nextState = {
+    ...state,
+    ...update,
+  }
+  //if (equal(state, nextState)) {
+  //  return
+  //}
+  state = nextState
+}
+
 function physics(dt: number): void {
 
   const { c } = state
@@ -43,19 +59,18 @@ function physics(dt: number): void {
     y: p1.y + (v1.y * dt),
   }
 
-  const v2 = {
+  const v2 = zero({
     x: (v1.x - v1.x * c.f * dt) + (c.a.x * dt),
     y: (v1.y - v1.y * c.f * dt) + (c.a.y * dt),
-  }
+  })
 
-  state = {
-    ...state,
+  updateState({
     c: {
       ...state.c,
       p: p2,
       v: v2,
     }
-  }
+  })
 
 }
 
@@ -107,6 +122,17 @@ document.addEventListener('touchstart', (e) => {
     y: clientY,
   }
 
+  if (state.gesture1) {
+    const gesture2: Gesture = {
+      a: touch,
+      b: touch,
+    }
+
+    updateState({ gesture2 })
+
+    return
+  }
+
   const dist = distance(touch, c.p)
 
   if (dist < c.r * 1.5) {
@@ -116,29 +142,40 @@ document.addEventListener('touchstart', (e) => {
       b: touch,
     }
 
-    state = {
-      ...state,
-      gesture1,
-    }
+    updateState({ gesture1 })
   }
 })
 
 document.addEventListener('touchmove', (e) => {
+  if (state.gesture2) {
+    const touch = e.targetTouches.item(0)
+    const { clientX, clientY } = touch
+    const vec2: Vec2 = { x: clientX, y: clientY }
+    updateState({
+      gesture2: {
+        ...state.gesture2,
+        b: vec2,
+      }
+    })
+    return
+  }
+
   if (state.gesture1) {
     const touch = e.targetTouches.item(0)
     const { clientX, clientY } = touch
     const vec2: Vec2 = { x: clientX, y: clientY }
-    state = {
-      ...state,
+    updateState({
       gesture1: {
         ...state.gesture1,
         b: vec2,
       }
-    }
+    })
   }
+
 })
 
 document.addEventListener('touchend', (e) => {
+
   if (state.gesture1) {
     const timeout = window.setTimeout(() => {
       console.log(state.gesture1)
@@ -148,19 +185,16 @@ document.addEventListener('touchend', (e) => {
       v = normalize(v)
       v = multiply(v, Math.sqrt(mag * 20) * 20)
 
-      state = {
-        ...state,
+      updateState({
         gesture1: null,
+        gesture2: null,
         timeout: null,
         c: {
           ...state.c,
           v,
         }
-      }
-    }, 500)
-    state = {
-      ...state,
-      timeout,
-    }
+      })
+    }, state.gesture2 ? 0 : 500)
+    updateState({ timeout })
   }
 })

@@ -30,3 +30,11 @@ export function subtract(a: Vec2, b: Vec2) {
     y: a.y - b.y,
   }
 }
+
+export function zero({ x, y }: Vec2): Vec2 {
+  const limit = .1
+  return {
+    x: Math.abs(x) < limit ? 0 : x,
+    y: Math.abs(y) < limit ? 0 : y,
+  }
+}
