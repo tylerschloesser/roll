@@ -1,47 +1,21 @@
+import {
+  Vec2,
+  Circle,
+  Gesture,
+  State,
+} from './core'
+
+import {
+  distance,
+  scale,
+  subtract,
+} from './lib'
 
 const canvas = document.querySelector<HTMLCanvasElement>('canvas')
 const context = canvas.getContext('2d')
 
 canvas.height = window.innerHeight
 canvas.width = window.innerWidth
-
-interface Circle {
-  p: Vec2 // position
-  r: number // radius
-  v: Vec2 // velocity
-  a: Vec2 // acceleration
-  f: number // friction
-}
-
-interface Vec2 {
-  x: number
-  y: number
-}
-
-function scale(vec2: Vec2, m: number): Vec2 {
-  return {
-    x: m,
-    y: m,
-  }
-}
-
-function subtract(a: Vec2, b: Vec2) {
-  return {
-    x: a.x - b.x,
-    y: a.y - b.y,
-  }
-}
-
-interface Gesture {
-  a: Vec2
-  b: Vec2
-}
-
-interface State {
-  c: Circle
-  timeout?: number
-  gesture?: Gesture
-}
 
 let state: State = {
   c: {
@@ -114,9 +88,6 @@ function draw(t2: number): void {
 
 draw(0)
 
-function distance(a: Vec2, b: Vec2): number {
-  return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
-}
 
 document.addEventListener('touchstart', (e) => {
 
