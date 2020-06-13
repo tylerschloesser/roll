@@ -6,16 +6,30 @@ canvas.height = window.innerHeight
 canvas.width = window.innerWidth
 
 interface Circle {
-  p: Vec2
-  r: number
-  v: Vec2
-  a: Vec2
-  f: number
+  p: Vec2 // position
+  r: number // radius
+  v: Vec2 // velocity
+  a: Vec2 // acceleration
+  f: number // friction
 }
 
 interface Vec2 {
   x: number
   y: number
+}
+
+function scale(vec2: Vec2, m: number): Vec2 {
+  return {
+    x: m,
+    y: m,
+  }
+}
+
+function subtract(a: Vec2, b: Vec2) {
+  return {
+    x: a.x - b.x,
+    y: a.y - b.y,
+  }
 }
 
 interface Gesture {
@@ -156,8 +170,7 @@ document.addEventListener('touchend', (e) => {
         timeout: null,
         c: {
           ...state.c,
-          v: { x: -1000, y: 1000 },
-          //a: { x: -.01, y: -.01 },
+          v: scale(subtract(state.gesture.a, state.gesture.b), 1000),
         }
       }
     }, 500)
