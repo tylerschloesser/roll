@@ -114,6 +114,10 @@ function draw(t2: number): void {
 
 draw(0)
 
+function distance(a: Vec2, b: Vec2): number {
+  return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
+}
+
 document.addEventListener('touchstart', (e) => {
 
   if (state.timeout) {
@@ -121,21 +125,21 @@ document.addEventListener('touchstart', (e) => {
     return
   }
 
-  const touch = e.targetTouches.item(0)
-
+  const { clientX, clientY } = e.targetTouches.item(0)
   const { c } = state
-  const { clientX, clientY } = touch
-  const dist = Math.sqrt(Math.pow(clientX - c.p.x, 2) + Math.pow(clientY - c.p.y, 2))
+
+  const touch: Vec2 = {
+    x: clientX,
+    y: clientY,
+  }
+
+  const dist = distance(touch, c.p)
 
   if (dist < c.r * 1.5) {
 
-    const vec2: Vec2 = {
-      x: clientX,
-      y: clientY,
-    }
     const gesture: Gesture = {
-      a: vec2,
-      b: vec2,
+      a: touch,
+      b: touch,
     }
 
     state = {
