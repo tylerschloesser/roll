@@ -5,28 +5,57 @@ const context = canvas.getContext('2d')
 canvas.height = window.innerHeight
 canvas.width = window.innerWidth
 
-const cx = canvas.width / 2
-const cy = canvas.height / 2
-const cr = 50
+interface Circle {
+  p: Vec2
+  r: number
+}
+
+interface Vec2 {
+  x: number
+  y: number
+}
+
+interface Gesture {
+  a: Vec2
+  b: Vec2
+}
 
 interface State {
-  touch: boolean
+  c: Circle
   timeout?: number
+  gesture?: Gesture
 }
 
 let state: State = {
-  touch: false
+  c: {
+    p: {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+    },
+    r: 50,
+  }
 }
 
 function draw(): void {
   context.fillStyle = "grey";
   context.fillRect(0, 0, canvas.width, canvas.height)
 
+  const { c } = state
+
   context.beginPath()
-  context.fillStyle = state.touch ? 'red' : 'blue'
-  context.arc(cx, cy, cr, 0, 2 * Math.PI)
+  context.fillStyle = state.gesture ? 'red' : 'blue'
+  context.arc(c.p.x, c.p.y, c.r, 0, 2 * Math.PI)
   context.fill()
   context.stroke()
+
+  if (state.gesture) {
+    const { a, b } = state.gesture
+
+    context.beginPath()
+    context.moveTo(a.x, a.y)
+    context.lineTo(b.x, b.y)
+    context.stroke()
+  }
 
   requestAnimationFrame(draw)
 }
@@ -34,25 +63,59 @@ function draw(): void {
 draw()
 
 document.addEventListener('touchstart', (e) => {
+
+  if (state.timeout) {
+    window.clearTimeout(state.timeout)
+    return
+  }
+
   const touch = e.targetTouches.item(0)
 
+  const { c } = state
   const { clientX, clientY } = touch
-  const dist = Math.sqrt(Math.pow(clientX - cx, 2) + Math.pow(clientY - cy, 2))
+  const dist = Math.sqrt(Math.pow(clientX - c.p.x, 2) + Math.pow(clientY - c.p.y, 2))
 
-  if (dist < cr * 1.5) {
+  if (dist < c.r * 1.5) {
+
+    const vec2: Vec2 = {
+      x: clientX,
+      y: clientY,
+    }
+    const gesture: Gesture = {
+      a: vec2,
+      b: vec2,
+    }
+
     state = {
       ...state,
-      touch: true,
+      gesture,
+    }
+  }
+})
+
+document.addEventListener('touchmove', (e) => {
+  if (state.gesture) {
+    const touch = e.targetTouches.item(0)
+    const { clientX, clientY } = touch
+    const vec2: Vec2 = { x: clientX, y: clientY }
+    state = {
+      ...state,
+      gesture: {
+        ...state.gesture,
+        b: vec2,
+      }
     }
   }
 })
 
 document.addEventListener('touchend', (e) => {
-  if (state.touch) {
+  if (state.gesture) {
     const timeout = window.setTimeout(() => {
+      console.log(state.gesture)
       state = {
         ...state,
-        touch: false,
+        gesture: null,
+        timeout: null,
       }
     }, 500)
     state = {
