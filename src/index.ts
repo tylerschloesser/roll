@@ -15,6 +15,8 @@ import {
   zero,
 } from './lib'
 
+let debug = false
+
 const canvas = document.querySelector<HTMLCanvasElement>('canvas')
 const context = canvas.getContext('2d')
 
@@ -43,10 +45,9 @@ function updateState(update: Partial<State>): void {
     ...state,
     ...update,
   }
-  if (equal(state, nextState)) {
-    return
+  if (debug && !equal(state, nextState)) {
+    console.log(nextState)
   }
-  console.log(nextState)
   state = nextState
 }
 
@@ -65,11 +66,18 @@ function physics(dt: number): void {
     y: (v1.y - v1.y * c.f * dt) + (c.a.y * dt),
   })
 
+  const a1 = c.a
+  const a2 = zero({
+    x: (a1.x - a1.x * c.f * dt),
+    y: (a1.y - a1.y * c.f * dt),
+  })
+
   updateState({
     c: {
       ...state.c,
       p: p2,
       v: v2,
+      a: a2,
     }
   })
 
@@ -193,6 +201,14 @@ document.addEventListener('touchend', (e) => {
       v = normalize(v)
       v = multiply(v, Math.sqrt(mag * 20) * 20)
 
+      let a = { x: 0, y: 0 }
+      if (state.gesture2) {
+        a = subtract(state.gesture2.a, state.gesture2.b)
+        let mag = magnitude(a)
+        a = normalize(a)
+        a = multiply(a, Math.sqrt(mag * 20) * 20)
+      }
+
       updateState({
         gesture1: null,
         gesture2: null,
@@ -200,9 +216,10 @@ document.addEventListener('touchend', (e) => {
         c: {
           ...state.c,
           v,
+          a,
         }
       })
-    }, state.gesture2 ? 0 : 500)
+    }, state.gesture2 ? 0 : 1000)
     updateState({ timeout })
   }
 })
