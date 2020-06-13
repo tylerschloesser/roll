@@ -1,5 +1,9 @@
 import { Vec2 } from './core'
 
+export function magnitude(vec2: Vec2): number {
+  return distance(vec2, { x: 0, y: 0 })
+}
+
 export function distance(a: Vec2, b: Vec2): number {
   return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
 }
@@ -12,8 +16,8 @@ export function multiply(vec2: Vec2, m: number) {
 }
 
 export function normalize(vec2: Vec2): Vec2 {
-  const dist = distance({ x: 0, y: 0 }, vec2)
-  return multiply(vec2, 1 / dist)
+  const mag = magnitude(vec2)
+  return multiply(vec2, 1 / mag)
 }
 
 export function scale(vec2: Vec2, m: number): Vec2 {

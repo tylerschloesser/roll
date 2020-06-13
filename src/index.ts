@@ -9,6 +9,9 @@ import {
   distance,
   scale,
   subtract,
+  multiply,
+  magnitude,
+  normalize,
 } from './lib'
 
 const canvas = document.querySelector<HTMLCanvasElement>('canvas')
@@ -26,7 +29,7 @@ let state: State = {
     r: 50,
     v: { x: 0, y: 0 },
     a: { x: 0, y: 0 },
-    f: 10,
+    f: 5,
   }
 }
 
@@ -139,13 +142,19 @@ document.addEventListener('touchend', (e) => {
   if (state.gesture) {
     const timeout = window.setTimeout(() => {
       console.log(state.gesture)
+
+      let v = subtract(state.gesture.a, state.gesture.b)
+      let mag = magnitude(v)
+      v = normalize(v)
+      v = multiply(v, Math.sqrt(mag * 20) * 20)
+
       state = {
         ...state,
         gesture: null,
         timeout: null,
         c: {
           ...state.c,
-          v: scale(subtract(state.gesture.a, state.gesture.b), 1000),
+          v,
         }
       }
     }, 500)
