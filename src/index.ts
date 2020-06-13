@@ -10,6 +10,7 @@ interface Circle {
   r: number
   v: Vec2
   a: Vec2
+  f: number
 }
 
 interface Vec2 {
@@ -37,6 +38,7 @@ let state: State = {
     r: 50,
     v: { x: 0, y: 0 },
     a: { x: 0, y: 0 },
+    f: 10,
   }
 }
 
@@ -46,13 +48,13 @@ function physics(dt: number): void {
   const v1 = c.v
   const p1 = c.p
   const p2 = {
-    x: p1.x + v1.x,
-    y: p1.y + v1.y,
+    x: p1.x + (v1.x * dt),
+    y: p1.y + (v1.y * dt),
   }
 
   const v2 = {
-    x: v1.x + c.a.x,
-    y: v1.y + c.a.y,
+    x: (v1.x - v1.x * c.f * dt) + (c.a.x * dt),
+    y: (v1.y - v1.y * c.f * dt) + (c.a.y * dt),
   }
 
   state = {
@@ -69,7 +71,7 @@ function physics(dt: number): void {
 let t1 = 0
 function draw(t2: number): void {
 
-  let dt = t2 - t1
+  let dt = (t2 - t1) / 1000
   t1 = t2
   physics(dt)
 
@@ -154,8 +156,8 @@ document.addEventListener('touchend', (e) => {
         timeout: null,
         c: {
           ...state.c,
-          v: { x: 1, y: 1 },
-          a: { x: -.01, y: -.01 },
+          v: { x: -1000, y: 1000 },
+          //a: { x: -.01, y: -.01 },
         }
       }
     }, 500)
