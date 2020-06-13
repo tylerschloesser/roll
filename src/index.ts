@@ -43,9 +43,10 @@ function updateState(update: Partial<State>): void {
     ...state,
     ...update,
   }
-  //if (equal(state, nextState)) {
-  //  return
-  //}
+  if (equal(state, nextState)) {
+    return
+  }
+  console.log(nextState)
   state = nextState
 }
 
@@ -101,6 +102,15 @@ function draw(t2: number): void {
     context.stroke()
   }
 
+  if (state.gesture2) {
+    const { a, b } = state.gesture2
+
+    context.beginPath()
+    context.moveTo(a.x, a.y)
+    context.lineTo(b.x, b.y)
+    context.stroke()
+  }
+
   requestAnimationFrame(draw)
 }
 
@@ -109,10 +119,6 @@ draw(0)
 
 document.addEventListener('touchstart', (e) => {
 
-  if (state.timeout) {
-    window.clearTimeout(state.timeout)
-    return
-  }
 
   const { clientX, clientY } = e.targetTouches.item(0)
   const { c } = state
@@ -122,7 +128,9 @@ document.addEventListener('touchstart', (e) => {
     y: clientY,
   }
 
-  if (state.gesture1) {
+  if (state.timeout) {
+    window.clearTimeout(state.timeout)
+
     const gesture2: Gesture = {
       a: touch,
       b: touch,
