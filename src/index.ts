@@ -11,6 +11,7 @@ const cr = 50
 
 interface State {
   touch: boolean
+  timeout?: number
 }
 
 let state: State = {
@@ -47,8 +48,16 @@ document.addEventListener('touchstart', (e) => {
 })
 
 document.addEventListener('touchend', (e) => {
-  state = {
-    ...state,
-    touch: false,
+  if (state.touch) {
+    const timeout = window.setTimeout(() => {
+      state = {
+        ...state,
+        touch: false,
+      }
+    }, 500)
+    state = {
+      ...state,
+      timeout,
+    }
   }
 })
