@@ -8,6 +8,7 @@ canvas.width = window.innerWidth
 interface Circle {
   p: Vec2
   r: number
+  v: Vec2
 }
 
 interface Vec2 {
@@ -33,10 +34,36 @@ let state: State = {
       y: canvas.height / 2,
     },
     r: 50,
+    v: { x: 0, y: 0 },
   }
 }
 
-function draw(): void {
+function physics(dt: number): void {
+
+  const { c } = state
+  const p1 = c.p
+  const p2 = {
+    x: p1.x + c.v.x,
+    y: p1.y + c.v.y,
+  }
+
+  state = {
+    ...state,
+    c: {
+      ...state.c,
+      p: p2,
+    }
+  }
+
+}
+
+let t1 = 0
+function draw(t2: number): void {
+
+  let dt = t2 - t1
+  t1 = t2
+  physics(dt)
+
   context.fillStyle = "grey";
   context.fillRect(0, 0, canvas.width, canvas.height)
 
@@ -60,7 +87,7 @@ function draw(): void {
   requestAnimationFrame(draw)
 }
 
-draw()
+draw(0)
 
 document.addEventListener('touchstart', (e) => {
 
@@ -116,6 +143,10 @@ document.addEventListener('touchend', (e) => {
         ...state,
         gesture: null,
         timeout: null,
+        c: {
+          ...state.c,
+          v: { x: 1, y: 1 },
+        }
       }
     }, 500)
     state = {
