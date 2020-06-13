@@ -72,13 +72,13 @@ function draw(t2: number): void {
   const { c } = state
 
   context.beginPath()
-  context.fillStyle = state.gesture ? 'red' : 'blue'
+  context.fillStyle = state.gesture1 ? 'red' : 'blue'
   context.arc(c.p.x, c.p.y, c.r, 0, 2 * Math.PI)
   context.fill()
   context.stroke()
 
-  if (state.gesture) {
-    const { a, b } = state.gesture
+  if (state.gesture1) {
+    const { a, b } = state.gesture1
 
     context.beginPath()
     context.moveTo(a.x, a.y)
@@ -111,27 +111,27 @@ document.addEventListener('touchstart', (e) => {
 
   if (dist < c.r * 1.5) {
 
-    const gesture: Gesture = {
+    const gesture1: Gesture = {
       a: touch,
       b: touch,
     }
 
     state = {
       ...state,
-      gesture,
+      gesture1,
     }
   }
 })
 
 document.addEventListener('touchmove', (e) => {
-  if (state.gesture) {
+  if (state.gesture1) {
     const touch = e.targetTouches.item(0)
     const { clientX, clientY } = touch
     const vec2: Vec2 = { x: clientX, y: clientY }
     state = {
       ...state,
-      gesture: {
-        ...state.gesture,
+      gesture1: {
+        ...state.gesture1,
         b: vec2,
       }
     }
@@ -139,18 +139,18 @@ document.addEventListener('touchmove', (e) => {
 })
 
 document.addEventListener('touchend', (e) => {
-  if (state.gesture) {
+  if (state.gesture1) {
     const timeout = window.setTimeout(() => {
-      console.log(state.gesture)
+      console.log(state.gesture1)
 
-      let v = subtract(state.gesture.a, state.gesture.b)
+      let v = subtract(state.gesture1.a, state.gesture1.b)
       let mag = magnitude(v)
       v = normalize(v)
       v = multiply(v, Math.sqrt(mag * 20) * 20)
 
       state = {
         ...state,
-        gesture: null,
+        gesture1: null,
         timeout: null,
         c: {
           ...state.c,

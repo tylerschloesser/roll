@@ -21,5 +21,5 @@ export interface Gesture {
 export interface State {
   c: Circle
   timeout?: number
-  gesture?: Gesture
+  gesture1?: Gesture
 }
